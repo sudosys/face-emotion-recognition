@@ -109,9 +109,9 @@ def build_model():
 
 
 if __name__ == '__main__':
-    modelExists: bool = os.path.exists(model_file_path)
+    model_exists: bool = os.path.exists(model_file_path)
 
-    if not modelExists:
+    if not model_exists:
         build_model()
     else:
         print("Model already exists.")
