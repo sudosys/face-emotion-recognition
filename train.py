@@ -31,11 +31,11 @@ class FERModelBuilder:
             pixels = np.array(row['pixels'].split(" "))
             try:
                 if self.__training_label in row['Usage']:
-                    np.append(self.__x_train, pixels)
-                    np.append(self.__y_train, row['emotion'])
+                    self.__x_train = np.append(self.__x_train, pixels)
+                    self.__y_train = np.append(self.__y_train, row['emotion'])
                 elif self.__test_label in row['Usage']:
-                    np.append(self.__x_test, pixels)
-                    np.append(self.__y_test, row['emotion'])
+                    self.__x_test = np.append(self.__x_test, pixels)
+                    self.__y_test = np.append(self.__y_test, row['emotion'])
             except:
                 print(f"Error occurred at index: {index} and row: {row}")
 
