@@ -5,8 +5,15 @@ from keras.api.preprocessing.image import img_to_array
 import train
 import os
 
+model_data_folder = 'model_data'
+dataset_folder = 'dataset'
+
 haar_cascade_file_name = 'haarcascade_frontalface_default.xml'
+haar_cascade_file_path = f'{model_data_folder}/{haar_cascade_file_name}'
+
 model_file_name = 'sentiment_analysis_model.keras'
+model_file_path = f'{model_data_folder}/{model_file_name}'
+
 emotion_labels = ['Angry', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral']
 image_shape = (48, 48)
 
@@ -90,11 +97,11 @@ def build_model():
     print("Starting Face Emotion Recognition model build...")
 
     fer_model_builder = train.FERModelBuilder(
-        dataset_path="fer2013.csv",
+        dataset_path=f"{dataset_folder}/fer2013.csv",
         training_label="Training",
         test_label="PublicTest",
         input_shape=(*image_shape, 1),
-        output_model_name=model_file_name)
+        output_model_path=model_file_path)
 
     fer_model_builder.start_build()
 
@@ -102,15 +109,15 @@ def build_model():
 
 
 if __name__ == '__main__':
-    modelExists: bool = os.path.exists(model_file_name)
+    modelExists: bool = os.path.exists(model_file_path)
 
     if not modelExists:
         build_model()
     else:
         print("Model already exists.")
 
-    haar_cascade = cv2.CascadeClassifier(haar_cascade_file_name)
-    emotion_classifier = load_model(model_file_name)
+    haar_cascade = cv2.CascadeClassifier(haar_cascade_file_path)
+    emotion_classifier = load_model(model_file_path)
 
     print("Starting video capture...\nPress 'q' to exit.")
 

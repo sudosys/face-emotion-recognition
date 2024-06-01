@@ -9,12 +9,12 @@ from keras.api.optimizers import Adam
 
 class FERModelBuilder:
 
-    def __init__(self, dataset_path, training_label, test_label, input_shape, output_model_name):
+    def __init__(self, dataset_path, training_label, test_label, input_shape, output_model_path):
         self.__dataset_path = dataset_path
         self.__training_label = training_label
         self.__test_label = test_label
         self.__image_shape = input_shape
-        self.__output_model_name = output_model_name
+        self.__output_model_name = output_model_path
         self.__x_train = np.array([], dtype='float32')
         self.__y_train = np.array([], dtype='float32')
         self.__x_test = np.array([], dtype='float32')
