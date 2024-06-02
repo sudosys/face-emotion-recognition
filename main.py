@@ -53,6 +53,7 @@ def detect_faces(frame):
 
         render_face_detection_frame(frame, predicted_emotions, x, y, w, h)
 
+
 def render_face_detection_frame(frame, predicted_emotions, x, y, w, h):
     cv2.rectangle(
         frame,
@@ -103,7 +104,9 @@ def build_model():
         input_shape=(*image_shape, 1),
         output_model_path=model_file_path)
 
-    fer_model_builder.start_build()
+    model = fer_model_builder.start_build()
+
+    fer_model_builder.save_model(model)
 
     print("Model built successfully.")
 

@@ -15,29 +15,48 @@ class FERModelBuilder:
         self.__test_label = test_label
         self.__image_shape = input_shape
         self.__output_model_name = output_model_path
-        self.__x_train = np.array([], dtype='float32')
-        self.__y_train = np.array([], dtype='float32')
-        self.__x_test = np.array([], dtype='float32')
-        self.__y_test = np.array([], dtype='float32')
+        self.__x_train = []
+        self.__y_train = []
+        self.__x_test = []
+        self.__y_test = []
 
     def start_build(self):
+        print("Splitting training and test data...")
         self.__read_split_data()
+        print("Splitting complete.\nStarting post processing...")
+        self.__post_process_data()
+        print("Post processing complete.\nBuilding model...")
         model = self.__build_model()
+        print("Model built successfully.\nStarting training...")
         self.__train_model(model)
+        print("Model trained successfully.")
+        return model
 
     def __read_split_data(self) -> None:
         data = pd.read_csv(self.__dataset_path)
         for index, row in data.iterrows():
-            pixels = np.array(row['pixels'].split(" "))
+            pixels = np.array(row['pixels'].split(" "), 'float32')
             try:
                 if self.__training_label in row['Usage']:
-                    self.__x_train = np.append(self.__x_train, pixels)
-                    self.__y_train = np.append(self.__y_train, row['emotion'])
+                    self.__x_train.append(pixels)
+                    self.__y_train.append(row['emotion'])
                 elif self.__test_label in row['Usage']:
-                    self.__x_test = np.append(self.__x_test, pixels)
-                    self.__y_test = np.append(self.__y_test, row['emotion'])
+                    self.__x_test.append(pixels)
+                    self.__y_test.append(row['emotion'])
             except:
                 print(f"Error occurred at index: {index} and row: {row}")
+            print(index)
+
+    def __post_process_data(self):
+        self.__x_train = np.array(self.__x_train, np.float32)
+        self.__y_train = np.array(self.__y_train, np.float32)
+        self.__x_test = np.array(self.__x_test, np.float32)
+        self.__y_test = np.array(self.__y_test, np.float32)
+
+        self.__x_train = normalize_data(self.__x_train)
+        self.__x_train = reshape_data(self.__x_train, self.__image_shape)
+        self.__x_test = normalize_data(self.__x_test)
+        self.__x_test = reshape_data(self.__x_test, self.__image_shape)
 
     def __build_model(self) -> Sequential:
         model = Sequential()
@@ -82,11 +101,6 @@ class FERModelBuilder:
     def __train_model(self, model: Sequential) -> None:
         self.__y_train = to_categorical(self.__y_train, num_classes=7)
         self.__y_test = to_categorical(self.__y_test, num_classes=7)
-
-        self.__x_train = normalize_data(self.__x_train)
-        self.__x_train = reshape_data(self.__x_train, self.__image_shape)
-        self.__x_test = normalize_data(self.__x_test)
-        self.__x_test = reshape_data(self.__x_test, self.__image_shape)
 
         model.compile(optimizer=Adam(), loss=categorical_crossentropy, metrics=['accuracy'])
 
