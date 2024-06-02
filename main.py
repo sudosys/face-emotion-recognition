@@ -17,6 +17,11 @@ model_file_path = f'{model_data_folder}/{model_file_name}'
 emotion_labels = ['Angry', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral']
 image_shape = (48, 48)
 
+# Camera color settings (in BGR format)
+rectangle_color = (0, 255, 0)
+dominant_emotion_color = (255, 0, 255)
+second_emotion_color = (255, 255, 0)
+
 
 def start_video_capture():
     video_capture = cv2.VideoCapture(0)
@@ -59,7 +64,7 @@ def render_face_detection_frame(frame, predicted_emotions, x, y, w, h):
         frame,
         (x, y),
         (x + w, y + h),
-        (0, 255, 0),
+        rectangle_color,
         2)
 
     for i, (emotion, prob) in enumerate(predicted_emotions[:2]):
@@ -71,7 +76,7 @@ def render_face_detection_frame(frame, predicted_emotions, x, y, w, h):
             (x, y_text),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.8,
-            (0, 255, 0),
+            dominant_emotion_color if i == 0 else second_emotion_color,
             2)
 
 
