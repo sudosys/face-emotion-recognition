@@ -45,7 +45,6 @@ class FERModelBuilder:
                     self.__y_test.append(row['emotion'])
             except:
                 print(f"Error occurred at index: {index} and row: {row}")
-            print(index)
 
     def __post_process_data(self):
         self.__x_train = np.array(self.__x_train, np.float32)

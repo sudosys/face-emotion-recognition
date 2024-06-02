@@ -1,13 +1,17 @@
 import cv2
+import os
+import datetime
+import train
 import numpy as np
 from keras.api.models import load_model
 from keras.api.preprocessing.image import img_to_array
-import train
-import os
 
+# Folders
 model_data_folder = 'model_data'
 dataset_folder = 'dataset'
+screenshots_folder = 'screenshots'
 
+# Model files and their respective paths
 haar_cascade_file_name = 'haarcascade_frontalface_default.xml'
 haar_cascade_file_path = f'{model_data_folder}/{haar_cascade_file_name}'
 
@@ -41,6 +45,9 @@ def start_video_capture():
             cv2.destroyAllWindows()
             break
 
+        if cv2.waitKey(1) & 0xFF == ord('s'):
+            take_screenshot(frame)
+
 
 def detect_faces(frame):
     grayscale_image = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -57,6 +64,15 @@ def detect_faces(frame):
         predicted_emotions = predict_emotion(roi)
 
         render_face_detection_frame(frame, predicted_emotions, x, y, w, h)
+
+
+def take_screenshot(frame):
+    folder_exists = os.path.isdir(screenshots_folder)
+
+    if not folder_exists:
+        os.mkdir(screenshots_folder)
+
+    cv2.imwrite(f'{screenshots_folder}/{datetime.datetime.now()}.jpg', frame)
 
 
 def render_face_detection_frame(frame, predicted_emotions, x, y, w, h):
@@ -127,6 +143,7 @@ if __name__ == '__main__':
     haar_cascade = cv2.CascadeClassifier(haar_cascade_file_path)
     emotion_classifier = load_model(model_file_path)
 
-    print("Starting video capture...\nPress 'q' to exit.")
+    print("Starting video capture...")
+    print("\nPress 's' to take a screenshot.\nPress 'q' to exit.")
 
     start_video_capture()
